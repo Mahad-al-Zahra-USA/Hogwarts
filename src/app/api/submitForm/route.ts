@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { validate as isUUID } from "uuid";
+import { getAuthenticatedUser } from "@/utils/supabase/user";
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -16,6 +17,8 @@ interface RequestBody {
 }
 
 export async function POST(req: NextRequest) {
+  const user = await getAuthenticatedUser();
+
   try {
     const { studentIds, eventTypeId, notes, sendEmail }: RequestBody = await req.json();
 
@@ -41,7 +44,7 @@ export async function POST(req: NextRequest) {
     // Create the event instance once in the event_log table for all participating students
     const { data: newEvent, error: createEventError } = await supabase
       .from("event_log")
-      .insert({ event_type_id: eventTypeId, event_details: notes })
+      .insert({ event_type_id: eventTypeId, event_details: notes, user_id: user?.id })
       .select("*")
       .single();
 
