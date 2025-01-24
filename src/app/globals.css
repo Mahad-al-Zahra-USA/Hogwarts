@@ -37,9 +37,6 @@
 
   /* ----- Progress bar for secondary ----- */
   --bs-progress-bar-secondary-bg: var(--bs-secondary); /* Progress bar secondary color */
-
-  /* Font fallback */
-  /* --font-fallback: system-ui, -apple-system, Arial, sans-serif; */
 }
 
 /* Make sure to override the hover and active states for buttons */
@@ -100,6 +97,7 @@
 body {
   color: var(--foreground);
   background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
   height: 100vh;
 }
 
@@ -130,8 +128,7 @@ body {
   color: inherit; /* Ensures the text color remains consistent */
 }
 
-.nav-link:focus,
-.nav-link:active {
+.nav-link:focus, .nav-link:active {
   text-decoration: underline; /* Underline the text when the link is active or focused */
   color: inherit; /* Keeps the text color unchanged */
 }
