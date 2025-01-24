@@ -3,11 +3,8 @@
 
 import { createBrowserClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const router = useRouter();
-
   // Initialize the Supabase client for the browser
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,9 +19,6 @@ export default function LoginPage() {
       },
     });
 
-    if (data) {
-      console.log("Google login response:", data);
-    }
     if (data.url) {
       return NextResponse.redirect(data.url);
     }
