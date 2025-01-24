@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 let BaseURL = process.env.NEXT_PUBLIC_SITE_URL;
+BaseURL = "http://localhost:3000/";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
