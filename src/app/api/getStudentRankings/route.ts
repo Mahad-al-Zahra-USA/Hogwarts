@@ -17,6 +17,8 @@ interface StudentRanking {
   house_id: number;
 }
 
+
+
 export async function GET() {
   try {
     // Get all current students with gender and house information, excluding dev students (NULL house_id)
@@ -66,9 +68,13 @@ export async function GET() {
 
     // Add up points for students who have events
     if (eventData && Array.isArray(eventData)) {
-      eventData.forEach((participation: any) => {
-        const studentId = participation.student_id;
-        const points = participation.event_log?.event_types?.points || 0;
+      eventData.forEach((participation: unknown) => {
+        const participationData = participation as { 
+          student_id: string; 
+          event_log?: { event_types?: { points?: number } } 
+        };
+        const studentId = participationData.student_id;
+        const points = participationData.event_log?.event_types?.points || 0;
         
         if (studentId && typeof points === 'number') {
           const currentPoints = studentPoints.get(studentId) || 0;
