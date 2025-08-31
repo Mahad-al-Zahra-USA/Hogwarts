@@ -2,10 +2,25 @@ import { NextResponse, NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname != "/auth/callback") {
-    // Skip the session check after login flow callback route to allow redirection to the home page
+  // Skip authentication for these paths:
+  // - /auth/callback (OAuth callback)
+  // - /leaderboard (public leaderboard page)
+  // - /api/ (all API routes - so they can be called without auth)
+  const publicPaths = [
+    "/auth/callback",
+    "/leaderboard",
+    "/api/"
+  ];
+  
+  const isPublicPath = publicPaths.some(path => 
+    request.nextUrl.pathname.startsWith(path)
+  );
+  
+  if (!isPublicPath) {
+    // Apply authentication for all other routes
     return await updateSession(request);
   }
+  
   return NextResponse.next();
 }
 

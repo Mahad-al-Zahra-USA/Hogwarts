@@ -1,0 +1,239 @@
+.container {
+  min-height: 100vh;
+  background: #fff6e5; /* Cream background matching screenshot */
+  padding: 4rem 2rem 2rem; /* Increased top padding to create space from navbar */
+  font-family: Arial, sans-serif;
+}
+
+.leaderboardsWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 1200px; /* Increased to accommodate wider leaderboards */
+  margin: 0 auto;
+}
+
+.leaderboardSection {
+  background: #fff6e5;
+  border: 10px solid #5a0506; /* Dark red/maroon border */
+  border-radius: 12px;
+  padding: 2.5rem 1.5rem 1.5rem; /* Increased bottom padding */
+  width: 500px; /* Increased width to accommodate longer names */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: auto; /* Let content determine height */
+  min-height: 850px; /* Increased to fully show 10 students */
+}
+
+.leaderboardTitle {
+  background: #fff6e5; /* Use same beige background as site */
+  color: #5a0506;
+  font-family: var(--font-dm-sans), Arial, sans-serif; /* DM Sans font */
+  font-weight: bold;
+  font-size: 1.9rem;
+  padding: 0.2rem 1.5rem; /* Increased horizontal padding */
+  border: 10px solid #5a0506;
+      border-radius: 9px; /* Rounded corners for title boxes */
+  text-align: center;
+  position: absolute;
+  top: -2.50rem; /* Adjusted to center on the border line */
+  left: 50%;
+  transform: translateX(-50%); /* Center horizontally */
+  z-index: 2; /* Appear above the border */
+  flex-shrink: 0; /* Prevent title from shrinking */
+  white-space: nowrap; /* Prevent text wrapping */
+  min-width: max-content; /* Ensure box is wide enough for content */
+}
+
+.studentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1; /* Take up remaining space */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding-right: 0; /* No space needed for hidden scrollbar */
+  max-height: 790px; /* Increased to fully show 10 students */
+  
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+.studentsList::-webkit-scrollbar {
+  display: none;
+}
+
+.studentsList::-webkit-scrollbar-track {
+  background: rgba(90, 5, 6, 0.1);
+  border-radius: 4px;
+}
+
+.studentsList::-webkit-scrollbar-thumb {
+  background: rgba(90, 5, 6, 0.3);
+  border-radius: 4px;
+}
+
+.studentsList::-webkit-scrollbar-thumb:hover {
+  background: rgba(90, 5, 6, 0.5);
+}
+
+.studentCard {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  position: relative;
+  flex-shrink: 0; /* Prevent cards from shrinking */
+  min-height: 68px; /* Increased to accommodate larger font and potential text wrapping */
+}
+
+/* Yellow house cards need black text for readability */
+.yellowHouse {
+  color: #000 !important;
+}
+
+.rank {
+  color: white;
+  font-size: 1.35rem;
+  font-weight: 1000; /* Extra bold for rank numbers */
+  margin-right: 1rem;
+  flex-shrink: 0;
+  min-width: 20px; /* Ensure consistent spacing */
+}
+
+/* Yellow house rank numbers need black text */
+.yellowHouse .rank {
+  color: #000 !important;
+}
+
+/* Yellow house points need black text */
+.yellowHouse .points {
+  color: #000 !important;
+}
+
+/* Yellow house student names need black text */
+.yellowHouse .studentName {
+  color: #000 !important;
+}
+
+.studentName {
+  flex: 1;
+  font-family: var(--font-dm-sans), Arial, sans-serif; /* DM Sans font */
+  font-size: 1.3rem; /* Increased font size for student names */
+  font-weight: 600; /* Semi-bold for student names, less bold than before */
+  margin-right: 1rem;
+  word-wrap: break-word; /* Allow names to wrap if extremely long */
+  line-height: 1.3; /* Adjust line height for wrapped text */
+  /* Removed text overflow ellipsis to show full names */
+}
+
+.points {
+  font-size: 1rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+
+
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #5a0506;
+}
+
+.error {
+  color: #d32f2f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.retryButton {
+  background: #5a0506;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.retryButton:hover {
+  background: #7a0b0c;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .leaderboardsWrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .leaderboardSection {
+    width: 100%;
+    max-width: 500px; /* Increased to match desktop width */
+    height: auto; /* Let content determine height */
+    min-height: 780px; /* Increased minimum height for mobile */
+    padding: 2.5rem 1rem 1rem; /* Increased bottom padding for mobile */
+  }
+  
+  .container {
+    padding: 3rem 1rem 1rem; /* Increased top padding for mobile to maintain space from navbar */
+  }
+
+  .studentsList {
+    max-height: 660px; /* Increased to fully show 10 students on mobile */
+  }
+
+  .studentCard {
+    min-height: 52px; /* Slightly smaller on mobile */
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .leaderboardSection {
+    padding: 2.5rem 1rem 1rem; /* Increased bottom padding for small screens */
+    height: auto; /* Let content determine height */
+    min-height: 750px; /* Increased minimum height for small screens */
+  }
+  
+  .studentCard {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+    min-height: 48px; /* Smaller cards on small screens */
+  }
+  
+  .rank {
+    font-size: 0.8rem;
+    margin-right: 0.8rem;
+    min-width: 18px; /* Adjusted for mobile */
+  }
+  
+  .studentName {
+    font-size: 0.9rem;
+  }
+  
+  .points {
+    font-size: 0.9rem;
+  }
+  
+  .leaderboardTitle {
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .studentsList {
+    max-height: 620px; /* Increased to fully show 10 students on small screens */
+  }
+} 
