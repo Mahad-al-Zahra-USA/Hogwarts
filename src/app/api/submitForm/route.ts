@@ -12,6 +12,7 @@ const supabase = createClient(
 interface RequestBody {
   studentIds: string[]; // Array of student UUIDs
   eventTypeId: number;
+  points?: number; // Custom points value (optional, defaults to event type points)
   notes?: string; // Optional event notes
   sendEmail: boolean; // Flag to send an email or not
 }
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
   const user = await getAuthenticatedUser();
 
   try {
-    const { studentIds, eventTypeId, notes, sendEmail }: RequestBody = await req.json();
+    const { studentIds, eventTypeId, points, notes, sendEmail }: RequestBody = await req.json();
 
     // Log email for MVP Build (remove later)
     console.log("Email flag:", sendEmail);
@@ -42,9 +43,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Create the event instance once in the event_log table for all participating students
+    // Store custom points and notes in event_details as JSON
+    const eventDetails = {
+      notes: notes || null,
+      customPoints: points // Include custom points if provided
+    };
+    
     const { data: newEvent, error: createEventError } = await supabase
       .from("event_log")
-      .insert({ event_type_id: eventTypeId, event_details: notes, user_id: user?.id })
+      .insert({ 
+        event_type_id: eventTypeId, 
+        event_details: JSON.stringify(eventDetails), 
+        user_id: user?.id 
+      })
       .select("*")
       .single();
 

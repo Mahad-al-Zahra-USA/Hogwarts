@@ -35,6 +35,7 @@ export default function Form() {
   const [sendEmail, setSendEmail] = useState<boolean>(false);
   const [selectedStudents, setSelectedStudents] = useState<StudentOption[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
   const [isTashjee, setIsTashjee] = useState<boolean>();
   // const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
 
@@ -83,12 +84,20 @@ export default function Form() {
   const handleEventChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const eventTypeId = parseInt(event.target.value, 10);
     const eventObj = events.find((e) => e.id === eventTypeId) || null;
-    if (eventObj) {
-      setPoints(eventObj.points);
+    
+    // Only update points if a different event is selected (not re-selecting the same event)
+    if (eventObj && selectedEvent !== eventTypeId) {
+      setPoints(eventObj.points); // Pre-fill with default points only for new event selection
+      setSendEmail(eventObj.send_email);
+      setSelectedEvent(eventTypeId);
+    } else if (eventObj && selectedEvent === eventTypeId) {
+      // Same event selected, only update email setting but preserve custom points
       setSendEmail(eventObj.send_email);
     } else {
+      // No event selected (default option)
       setPoints(0);
       setSendEmail(false);
+      setSelectedEvent(null);
     }
   };
 
@@ -104,6 +113,7 @@ export default function Form() {
     const eventTypeId = formData.get("event");
     const notes = formData.get("notes");
     const sendEmail = formData.get("sendEmail") === "on";
+    const customPoints = formData.get("points");
 
     // Validate multiple students
     if (!studentIds.length) {
@@ -126,6 +136,7 @@ export default function Form() {
         body: JSON.stringify({
           studentIds: studentIds.map(String), // Ensure UUIDs are passed as strings
           eventTypeId: Number(eventTypeId),
+          points: Number(customPoints), // Include custom points value
           notes: notes || null,
           sendEmail,
         }),
@@ -236,7 +247,17 @@ export default function Form() {
                   <label htmlFor="points" className={styles.form_label}>
                     Points:
                   </label>
-                  <input type="number" className="form-control" id="points" value={points} readOnly />
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    id="points" 
+                    name="points"
+                    value={points} 
+                    onChange={(e) => setPoints(Number(e.target.value))}
+                    min="0"
+                    step="1"
+                    placeholder="Enter custom points"
+                  />
                 </div>
                 <div className={(classNames(styles.form_group), "d-block")}>
                   <label htmlFor="notes" className={styles.form_label}>

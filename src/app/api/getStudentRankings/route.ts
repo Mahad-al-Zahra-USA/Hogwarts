@@ -39,12 +39,13 @@ export async function GET() {
 
     console.log("Found students:", allStudents.length);
 
-    // Get all event participations with points
+    // Get all event participations with points and custom points
     const { data: eventData, error: eventError } = await supabase
       .from("event_participants")
       .select(`
         student_id,
         event_log!inner(
+          event_details,
           event_types!inner(
             points
           )
@@ -71,10 +72,27 @@ export async function GET() {
       eventData.forEach((participation: unknown) => {
         const participationData = participation as { 
           student_id: string; 
-          event_log?: { event_types?: { points?: number } } 
+          event_log?: { 
+            event_details?: string;
+            event_types?: { points?: number } 
+          } 
         };
         const studentId = participationData.student_id;
-        const points = participationData.event_log?.event_types?.points || 0;
+        
+        // Check for custom points in event_details first
+        let points = participationData.event_log?.event_types?.points || 0;
+        
+        if (participationData.event_log?.event_details) {
+          try {
+            const eventDetails = JSON.parse(participationData.event_log.event_details);
+            if (eventDetails.customPoints && typeof eventDetails.customPoints === 'number') {
+              points = eventDetails.customPoints; // Use custom points if available
+            }
+          } catch (error) {
+            // If JSON parsing fails, fall back to default points
+            console.warn('Failed to parse event_details JSON:', error);
+          }
+        }
         
         if (studentId && typeof points === 'number') {
           const currentPoints = studentPoints.get(studentId) || 0;
