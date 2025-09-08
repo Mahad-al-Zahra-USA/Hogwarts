@@ -254,7 +254,6 @@ export default function Form() {
                     name="points"
                     value={points} 
                     onChange={(e) => setPoints(Number(e.target.value))}
-                    min="0"
                     step="1"
                     placeholder="Enter custom points"
                   />
