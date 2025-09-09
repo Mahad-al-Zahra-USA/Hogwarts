@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     // Store custom points and notes in event_details as JSON
     const eventDetails = {
       notes: notes || null,
-      customPoints: points // Include custom points if provided
+      ...(typeof points === 'number' ? { customPoints: points } : {})
     };
     
     const { data: newEvent, error: createEventError } = await supabase

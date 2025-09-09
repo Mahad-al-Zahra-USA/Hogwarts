@@ -85,7 +85,7 @@ export async function GET() {
         if (participationData.event_log?.event_details) {
           try {
             const eventDetails = JSON.parse(participationData.event_log.event_details);
-            if (eventDetails.customPoints && typeof eventDetails.customPoints === 'number') {
+            if (typeof eventDetails.customPoints === 'number') {
               points = eventDetails.customPoints; // Use custom points if available
             }
           } catch (error) {
