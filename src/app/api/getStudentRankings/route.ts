@@ -17,16 +17,14 @@ interface StudentRanking {
   house_id: number;
 }
 
-
-
 export async function GET() {
   try {
-    // Get all current students with gender and house information, TEMPORARILY INCLUDING dev students (NULL house_id) for testing
+    // Get all current students with gender and house information, excluding dev students (NULL house_id)
     const { data: allStudents, error: studentsError } = await supabase
       .from("students")
       .select("id, first_name, last_name, is_male, house_id")
       .eq("current_student", true)
-      // .not("house_id", "is", null); // TEMPORARILY INCLUDING dev students with NULL house_id for testing
+      .not("house_id", "is", null); // Exclude dev students with NULL house_id
 
     if (studentsError) {
       console.error("Error fetching students:", studentsError.message);
@@ -175,4 +173,4 @@ export async function GET() {
     errorResponse.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     return errorResponse;
   }
-} 
+}
