@@ -42,6 +42,9 @@ export default function Navigation() {
         <Link className="nav-link fs-4 fs-sm-5 fs-md-6" href="/leaderboard">
           Leaderboard
         </Link>
+        <Link className="nav-link fs-4 fs-sm-5 fs-md-6" href="/reports">
+          Reports
+        </Link>
       </div>
     );
   }
@@ -60,6 +63,9 @@ export default function Navigation() {
       <Link className="nav-link fs-4 fs-sm-5 fs-md-6" href="/leaderboard">
         Leaderboard
       </Link>
+      <Link className="nav-link fs-4 fs-sm-5 fs-md-6" href="/reports">
+        Reports
+      </Link>
     </div>
   );
-} 
+}

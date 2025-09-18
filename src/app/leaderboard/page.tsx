@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./page.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 interface StudentRanking {
   id: string;
@@ -25,80 +25,101 @@ export default function Leaderboard() {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    async function fetchStudentRankings() {
-      try {
-        console.log("Fetching student rankings...");
-        // Use real API now
-        const response = await fetch("/api/getStudentRankings");
-        
-        console.log("Response status:", response.status);
-        console.log("Response ok:", response.ok);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+  const fetchStudentRankings = useCallback(async () => {
+    setLoading(true);
+    
+    try {
+      console.log("Fetching student rankings...");
+      // Add timestamp to prevent caching
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/getStudentRankings?t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         }
-        
-        // Get response text first to see what we're actually getting
-        const responseText = await response.text();
-        console.log("Raw response text:", responseText.substring(0, 500));
-        
-        const contentType = response.headers.get("content-type");
-        console.log("Content-Type:", contentType);
-        
-        if (!contentType || !contentType.includes("application/json")) {
-          console.error("Response is not JSON:", responseText.substring(0, 200));
-          throw new Error("Server returned HTML instead of JSON. Check API endpoint.");
-        }
-        
-        // Parse the JSON
-        let data;
-        try {
-          data = JSON.parse(responseText);
-          console.log("Parsed JSON data:", data);
-        } catch (parseError) {
-          console.error("JSON parsing error:", parseError);
-          console.error("Response text that failed to parse:", responseText);
-          throw new Error("Failed to parse JSON response");
-        }
-        
-        if (data.success) {
-          console.log("Setting students data:", data.data);
-          
-          // Separate students by gender but preserve global ranks from API
-          const allStudents = data.data;
-          
-          // Filter male students (Dikrao) and preserve their global ranks
-          const males = allStudents
-            .filter((student: StudentRanking) => student.is_male === true);
-          
-          // Filter female students (Dikrio) and preserve their global ranks  
-          const females = allStudents
-            .filter((student: StudentRanking) => student.is_male === false);
-          
-          console.log("Male students (Dikrao):", males.length, "total");
-          console.log("Female students (Dikrio):", females.length, "total");
-          
-          setMaleStudents(males);
-          setFemaleStudents(females);
-          setError(null);
-        } else {
-          console.error("API returned success: false", data);
-          setError(data.error || "Failed to fetch rankings");
-        }
-      } catch (err) {
-        console.error("Error fetching student rankings:", err);
-        setError(err instanceof Error ? err.message : "Failed to load leaderboard");
-      } finally {
-        console.log("Setting loading to false");
-        setLoading(false);
+      });
+      
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
+      // Get response text first to see what we're actually getting
+      const responseText = await response.text();
+      console.log("Raw response text:", responseText.substring(0, 500));
+      
+      const contentType = response.headers.get("content-type");
+      console.log("Content-Type:", contentType);
+      
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Response is not JSON:", responseText.substring(0, 200));
+        throw new Error("Server returned HTML instead of JSON. Check API endpoint.");
+      }
+      
+      // Parse the JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("Parsed JSON data:", data);
+      } catch (parseError) {
+        console.error("JSON parsing error:", parseError);
+        console.error("Response text that failed to parse:", responseText);
+        throw new Error("Failed to parse JSON response");
+      }
+      
+      if (data.success) {
+        console.log("Setting students data:", data.data);
+        
+        // Separate students by gender but preserve global ranks from API
+        const allStudents = data.data;
+        
+        // Filter male students (Dikrao) and preserve their global ranks
+        const males = allStudents
+          .filter((student: StudentRanking) => student.is_male === true);
+        
+        // Filter female students (Dikrio) and preserve their global ranks  
+        const females = allStudents
+          .filter((student: StudentRanking) => student.is_male === false);
+        
+        console.log("Male students (Dikrao):", males.length, "total");
+        console.log("Female students (Dikrio):", females.length, "total");
+        
+        setMaleStudents(males);
+        setFemaleStudents(females);
+        setError(null);
+      } else {
+        console.error("API returned success: false", data);
+        setError(data.error || "Failed to fetch rankings");
+      }
+    } catch (err) {
+      console.error("Error fetching student rankings:", err);
+      setError(err instanceof Error ? err.message : "Failed to load leaderboard");
+    } finally {
+      console.log("Setting loading to false");
+      setLoading(false);
     }
+  }, []);
 
+  useEffect(() => {
     if (mounted) {
       fetchStudentRankings();
     }
-  }, [mounted]);
+  }, [mounted, fetchStudentRankings]);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    if (!mounted) return;
+    
+    const interval = setInterval(() => {
+      console.log("Auto-refreshing leaderboard...");
+      fetchStudentRankings();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [mounted, fetchStudentRankings]);
 
   const getCardColorByHouse = (house_id: number): string => {
     switch (house_id) {
@@ -216,4 +237,4 @@ export default function Leaderboard() {
       </div>
     </div>
   );
-} 
+}

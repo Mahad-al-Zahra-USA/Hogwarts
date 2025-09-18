@@ -21,12 +21,12 @@ interface StudentRanking {
 
 export async function GET() {
   try {
-    // Get all current students with gender and house information, excluding dev students (NULL house_id)
+    // Get all current students with gender and house information, TEMPORARILY INCLUDING dev students (NULL house_id) for testing
     const { data: allStudents, error: studentsError } = await supabase
       .from("students")
       .select("id, first_name, last_name, is_male, house_id")
       .eq("current_student", true)
-      .not("house_id", "is", null); // Exclude dev students with NULL house_id
+      // .not("house_id", "is", null); // TEMPORARILY INCLUDING dev students with NULL house_id for testing
 
     if (studentsError) {
       console.error("Error fetching students:", studentsError.message);
@@ -163,9 +163,16 @@ export async function GET() {
     console.log("Total rankings created:", rankings.length);
     console.log("Sample student data:", rankings.slice(0, 3));
 
-    return NextResponse.json({ success: true, data: rankings }, { status: 200 });
+    // Add cache control headers to prevent caching
+    const response = NextResponse.json({ success: true, data: rankings }, { status: 200 });
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
   } catch (err) {
     console.error("Unexpected error:", err);
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
+    const errorResponse = NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
+    errorResponse.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return errorResponse;
   }
 } 
